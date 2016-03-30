@@ -81,5 +81,9 @@ namespace TSP
             City.modeManager = modeManager;
         }
 
+        public String toString() {
+            return "{x:" + _X + " y:" + _Y + " elevation:" + _elevation + "}";
+        }
+
     }
 }

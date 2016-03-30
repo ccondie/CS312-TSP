@@ -11,54 +11,6 @@ namespace TSP
 
     class ProblemAndSolver
     {
-
-        private class TSPSolution
-        {
-            /// <summary>
-            /// we use the representation [cityB,cityA,cityC] 
-            /// to mean that cityB is the first city in the solution, cityA is the second, cityC is the third 
-            /// and the edge from cityC to cityB is the final edge in the path.  
-            /// You are, of course, free to use a different representation if it would be more convenient or efficient 
-            /// for your data structure(s) and search algorithm. 
-            /// </summary>
-            public ArrayList
-                Route;
-
-            /// <summary>
-            /// constructor
-            /// </summary>
-            /// <param name="iroute">a (hopefully) valid tour</param>
-            public TSPSolution(ArrayList iroute)
-            {
-                Route = new ArrayList(iroute);
-            }
-
-            /// <summary>
-            /// Compute the cost of the current route.  
-            /// Note: This does not check that the route is complete.
-            /// It assumes that the route passes from the last city back to the first city. 
-            /// </summary>
-            /// <returns></returns>
-            public double costOfRoute()
-            {
-                // go through each edge in the route and add up the cost. 
-                int x;
-                City here;
-                double cost = 0D;
-
-                for (x = 0; x < Route.Count - 1; x++)
-                {
-                    here = Route[x] as City;
-                    cost += here.costToGetTo(Route[x + 1] as City);
-                }
-
-                // go from the last city to the first. 
-                here = Route[Route.Count - 1] as City;
-                cost += here.costToGetTo(Route[0] as City);
-                return cost;
-            }
-        }
-
         #region Private members 
 
         /// <summary>
@@ -378,8 +330,28 @@ namespace TSP
         public string[] bBSolveProblem()
         {
             string[] results = new string[3];
+            PriorityQueue<int> pQueue = new PriorityQueue<int>();
 
             // TODO: Add your implementation for a branch and bound solver here.
+
+            // Calculate intial BSSF
+            // Generate the initial reducedCostMatrix
+            // Generate the initial lowerBound
+            // Generate a starting state for each of the cities
+
+            // Start the Branch and Bound Cycle
+            
+            // Grab a state
+
+            // Expand the state with nodes leading to any untouched nodes
+            //      if the generated state.path.Count equals the number of cities, then the state is a potential solution
+            //      else add the state into the pqueue
+
+            Console.WriteLine();
+            foreach(City current in Cities) {
+                Console.WriteLine(current.toString());
+            }
+
 
 
             results[COST] = "not implemented";    // load results into array here, replacing these dummy values
