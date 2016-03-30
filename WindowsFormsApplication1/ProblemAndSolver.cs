@@ -330,11 +330,16 @@ namespace TSP
         public string[] bBSolveProblem()
         {
             string[] results = new string[3];
-            PriorityQueue<int> pQueue = new PriorityQueue<int>();
+
+            PriorityQueue<State> pQueue = new PriorityQueue<State>();
 
             // TODO: Add your implementation for a branch and bound solver here.
 
-            // Calculate intial BSSF
+            // Calculate intial BSSF                //NOTE: the BSSF can be accessed anytime by calling costOfBssf(), be sure to update bssf with bssf = new TSPSolution(ArrayList<Cities>)
+            defaultSolveProblem();
+            Console.WriteLine("InitialBSSF: " + costOfBssf());
+
+            // Generate the initial distanceMatrix
             // Generate the initial reducedCostMatrix
             // Generate the initial lowerBound
             // Generate a starting state for each of the cities
