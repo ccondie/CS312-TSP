@@ -331,31 +331,123 @@ namespace TSP
         {
             string[] results = new string[3];
 
+            double[,] distanceMatrix = new double[Cities.Length, Cities.Length];
+            double initialLowerBound = 0;
             PriorityQueue<State> pQueue = new PriorityQueue<State>();
-
-            // TODO: Add your implementation for a branch and bound solver here.
 
             // Calculate intial BSSF                //NOTE: the BSSF can be accessed anytime by calling costOfBssf(), be sure to update bssf with bssf = new TSPSolution(ArrayList<Cities>)
             defaultSolveProblem();
-            Console.WriteLine("InitialBSSF: " + costOfBssf());
+
+//DIAG: print the intial BSSF
+Console.WriteLine("InitialBSSF: " + costOfBssf());
 
             // Generate the initial distanceMatrix
-            // Generate the initial reducedCostMatrix
-            // Generate the initial lowerBound
+            for (int y = 0; y < distanceMatrix.GetLength(1); y++) {
+                for(int x = 0; x < distanceMatrix.GetLength(0); x++) {
+                    distanceMatrix[x,y] = Cities[x].costToGetTo(Cities[y]);
+                }
+            }
+
+//DIAG: print the distance matrix
+for (int y = 0; y < distanceMatrix.GetLength(1); y++) {
+    for (int x = 0; x < distanceMatrix.GetLength(0); x++) {
+        Console.Write(distanceMatrix[x, y] + " ");
+    }
+    Console.WriteLine();
+}
+
+            // Calculate the initial reducedCostMatrix
+            // Search row by row, find smallest index, reduce all in row by index value, add indexValue to initialLower
+            for (int y = 0; y < distanceMatrix.GetLength(1); y++) {
+                int smallestIndex = 0;
+                double smallestIndexValue = double.PositiveInfinity;
+
+                //find the smallest index
+                for (int x = 0; x < distanceMatrix.GetLength(0); x++) {
+                    if (distanceMatrix[x, y] < smallestIndexValue) {
+                        smallestIndex = x;
+                        smallestIndexValue = distanceMatrix[x, y];
+                    }
+                }
+                //add index value to initialLower
+                initialLowerBound = initialLowerBound + smallestIndexValue;
+                //reduce all in row by index value
+                for(int x = 0; x < distanceMatrix.GetLength(0); x++) {
+                    distanceMatrix[x, y] = distanceMatrix[x, y] - smallestIndexValue;
+                }
+            }
+
+Console.WriteLine();
+Console.WriteLine();
+//DIAG: print the distance matrix
+for (int y = 0; y < distanceMatrix.GetLength(1); y++) {
+    for(int x = 0; x < distanceMatrix.GetLength(0); x++) {
+        Console.Write(distanceMatrix[x, y] + "\t");
+    }
+    Console.WriteLine();
+}
+Console.WriteLine("initialLowerBound: " + initialLowerBound);
+
+            // Search column by column, find smallest index in column, reduce all in column by index value, add indexValue to initialLower
+            for(int x = 0; x < distanceMatrix.GetLength(0); x++) {
+                int smallestIndex = 0;
+                double smallestIndexValue = double.PositiveInfinity;
+
+                //find the smallest index (if the smallest index is zero, nothing will change, as it should be)
+                for(int y = 0; y < distanceMatrix.GetLength(1); y++) {
+                    if (distanceMatrix[x, y] < smallestIndexValue) {
+                        smallestIndex = y;
+                        smallestIndexValue = distanceMatrix[x, y];
+                    }
+                }
+
+                //if there wasn't a zero in the column
+                if(smallestIndexValue != 0) {
+                    //add index value to initialLower
+                    initialLowerBound = initialLowerBound + smallestIndexValue;
+                    for(int y = 0; y < distanceMatrix.GetLength(1); y++) {
+                        distanceMatrix[x, y] = distanceMatrix[x, y] - smallestIndexValue;
+                    }
+                }
+            }
+
+Console.WriteLine();
+Console.WriteLine();
+//DIAG: print the distance matrix
+for (int y = 0; y < distanceMatrix.GetLength(1); y++) {
+    for (int x = 0; x < distanceMatrix.GetLength(0); x++) {
+        Console.Write(distanceMatrix[x, y] + "\t");
+    }
+    Console.WriteLine();
+}
+Console.WriteLine("initialLowerBound: " + initialLowerBound);
+
+
             // Generate a starting state for each of the cities
+            // Create a set of all the cities for each state to track what has yet to be visited
+            HashSet<int> CityIndexSet = new HashSet<int>();
+            for (int i = 0; i < Cities.Length; i++)
+                CityIndexSet.Add(i);
+
+            for (int i = 0; i < Cities.Length; i++) {
+                State addThis = new State(distanceMatrix, new List<int>(), initialLowerBound, i, CityIndexSet);
+                pQueue.Enqueue(addThis);
+            }
 
             // Start the Branch and Bound Cycle
-            
-            // Grab a state
+            while(pQueue.Count() != 0) {
+                // Grab a state
+                State currentState = pQueue.Dequeue();
 
-            // Expand the state with nodes leading to any untouched nodes
-            //      if the generated state.path.Count equals the number of cities, then the state is a potential solution
-            //      else add the state into the pqueue
-
-            Console.WriteLine();
-            foreach(City current in Cities) {
-                Console.WriteLine(current.toString());
+                //if the state's lower bound is inifinity, skip it and grab the next state
+                if (double.IsPositiveInfinity(currentState.getLowerBound())) 
+                    continue;
+                
+                // Expand the state with nodes leading to any untouched nodes
+                //      if the generated state.path.Count equals the number of cities, then the state is a potential solution
+                //      else add the state into the pqueue
             }
+
 
 
 

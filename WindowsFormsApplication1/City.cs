@@ -53,6 +53,9 @@ namespace TSP
         /// </summary>
         public double costToGetTo (City destination) 
         {
+            if (this.Equals(destination))
+                return Double.PositiveInfinity;
+
             // Cartesian distance
             double magnitude = Math.Sqrt(Math.Pow(this.X - destination.X, 2) + Math.Pow(this.Y - destination.Y, 2));
 
@@ -82,6 +85,10 @@ namespace TSP
         }
 
         public String toString() {
+            return "{x:" + _X + " y:" + _Y + " elevation:" + _elevation + "}";
+        }
+
+        public override string ToString() {
             return "{x:" + _X + " y:" + _Y + " elevation:" + _elevation + "}";
         }
 
