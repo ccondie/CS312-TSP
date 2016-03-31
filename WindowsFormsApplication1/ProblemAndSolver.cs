@@ -334,6 +334,7 @@ namespace TSP
             double[,] distanceMatrix = new double[Cities.Length, Cities.Length];
             double initialLowerBound = 0;
             PriorityQueue<State> pQueue = new PriorityQueue<State>();
+			int solutionCount = 0;
 
             // Calculate intial BSSF                //NOTE: the BSSF can be accessed anytime by calling costOfBssf(), be sure to update bssf with bssf = new TSPSolution(ArrayList<Cities>)
             defaultSolveProblem();
@@ -442,12 +443,37 @@ Console.WriteLine("initialLowerBound: " + initialLowerBound);
                 //if the state's lower bound is inifinity, skip it and grab the next state
                 if (double.IsPositiveInfinity(currentState.getLowerBound())) 
                     continue;
-                
-                // Expand the state with nodes leading to any untouched nodes
-                //      if the generated state.path.Count equals the number of cities, then the state is a potential solution
-                //      else add the state into the pqueue
-            }
 
+				//if the state's lower bound is bigger than our current BSSF, skip it and grab the next state
+				if (currentState.getLowerBound() > costOfBssf())
+					continue;
+
+                // Expand the state with nodes leading to any untouched nodes
+                HashSet<int> remainingCities = currentState.getRemainingCities();
+                foreach(int cityIndex in remainingCities)
+                {
+                    State newState = new State(currentState.getReducedCostMatrix(), currentState.getPath(), currentState.getLowerBound(), cityIndex, currentState.getRemainingCities());
+                    if(newState.getPath().Count == Cities.Length)
+                    {
+                        //if the generated state.path.Count equals the number of cities, then the state is a potential solution
+                        ArrayList potentialSolution = generatePath(newState.getPath());
+                        double potentialSolutionCost = pathCost(potentialSolution);
+
+                        // if the new solution has a cost less than that of the current BSSF, update the bssf
+                        if (potentialSolutionCost < costOfBssf())
+						{
+							bssf = new TSPSolution(potentialSolution);
+							solutionCount++;
+						}
+                    }
+                    else
+                    {
+                        //      else add the state into the pqueue
+                        pQueue.Enqueue(newState);
+                    }
+                }
+
+            }
 
 
 
@@ -456,6 +482,31 @@ Console.WriteLine("initialLowerBound: " + initialLowerBound);
             results[COUNT] = "-1";
 
             return results;
+        }
+
+        public ArrayList generatePath(List<int> cityIndexes)
+        {
+            ArrayList returnThis = new ArrayList();
+            for(int i = 0; i < cityIndexes.Count; i++)
+                returnThis.Add(Cities[i]);
+           
+            return returnThis;
+        }
+
+        public double pathCost(ArrayList path)
+        {
+            double totalCost = 0;
+
+            for(int i = 0; i < path.Count; i++)
+            {
+                if (i < (path.Count - 1))
+                    totalCost = totalCost + Cities[i].costToGetTo(Cities[i + 1]);
+                
+                if(i == (path.Count - 1))
+                    totalCost = totalCost + Cities[i].costToGetTo(Cities[0]);
+            }
+
+            return totalCost;
         }
 
         /////////////////////////////////////////////////////////////////////////////////////////////

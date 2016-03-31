@@ -139,5 +139,12 @@ namespace TSP {
         }
 
         public double getLowerBound() { return lowerBound; }
+
+        public HashSet<int> getRemainingCities() { return remainingCitiesIndexes; }
+
+        public double[,] getReducedCostMatrix() { return reducedCostMatrix; }
+
+        public List<int> getPath() { return path; }
+
     }
 }
